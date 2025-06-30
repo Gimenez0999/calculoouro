@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Ouro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #8B0000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculadora {
+            background: linear-gradient(to bottom right, #FFD700, #DAA520);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
+            width: 100%;
+            max-width: 400px;
+            color: #000;
+        }
+        .calculadora h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4B0000;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+        }
+        .resultado {
+            background-color: #FFF8DC;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #4B0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculadora">
+        <h2>Calculadora de Ouro</h2>
+        <label for="tipoOuro">Tipo de Ouro:</label>
+        <select id="tipoOuro">
+            <option value="1">24K (100%)</option>
+            <option value="0.89">22K (89%)</option>
+            <option value="0.69">18K (69%)</option>
+            <option value="0.40">14K (40%)</option>
+            <option value="0.13">10K (13%)</option>
+        </select>
+
+        <label for="peso">Peso (gramas):</label>
+        <input type="number" id="peso" placeholder="Digite o peso em gramas" />
+
+        <div class="resultado" id="resultado">R$ 0,00</div>
+    </div>
+
+    <script>
+        const tipoOuro = document.getElementById('tipoOuro');
+        const peso = document.getElementById('peso');
+        const resultado = document.getElementById('resultado');
+        const valorBase = 520;
+
+        function calcular() {
+            const fator = parseFloat(tipoOuro.value);
+            const pesoGramas = parseFloat(peso.value);
+            if (!isNaN(pesoGramas)) {
+                const total = fator * pesoGramas * valorBase;
+                resultado.innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+            } else {
+                resultado.innerText = 'R$ 0,00';
+            }
+        }
+
+        tipoOuro.addEventListener('change', calcular);
+        peso.addEventListener('input', calcular);
+    </script>
+</body>
+</html>

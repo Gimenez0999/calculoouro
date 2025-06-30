@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Ouro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            background-color: #4B0000;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculadora {
+            border: 4px solid #FFD700;
+            border-radius: 20px;
+            padding: 40px;
+            background-color: #4B0000;
+            color: #FFD700;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            background-color: #fff8dc;
+            color: #4B0000;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .resultado {
+            text-align: center;
+            font-size: 22px;
+            background-color: #fff8dc;
+            color: #4B0000;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculadora">
+        <h2>Calculadora de Ouro</h2>
+        <label for="tipoOuro">Tipo de Ouro:</label>
+        <select id="tipoOuro">
+            <option value="1">24K</option>
+            <option value="0.89">22K</option>
+            <option value="0.69">18K</option>
+            <option value="0.40">14K</option>
+            <option value="0.13">10K</option>
+        </select>
+
+        <label for="peso">Peso (gramas):</label>
+        <input type="number" id="peso" placeholder="Digite o peso em gramas" />
+
+        <div class="resultado" id="resultado">R$ 0,00</div>
+    </div>
+
+    <script>
+(function(){
+    const a=document.getElementById('tipoOuro'),
+          b=document.getElementById('peso'),
+          c=document.getElementById('resultado'),
+          d=520;
+    function e(){
+        const f=parseFloat(a.value),
+              g=parseFloat(b.value);
+        if(!isNaN(g)){
+            const h=f*g*d;
+            c.innerText='R$ '+h.toFixed(2).replace('.',',');
+        }else{
+            c.innerText='R$ 0,00';
+        }
+    }
+    a.addEventListener('change',e);
+    b.addEventListener('input',e);
+})();
+        const peso = document.getElementById('peso');
+        const resultado = document.getElementById('resultado');
+        const valorBase = 520;
+
+        function calcular() {
+            const fator = parseFloat(tipoOuro.value);
+            const pesoGramas = parseFloat(peso.value);
+            if (!isNaN(pesoGramas)) {
+                const total = fator * pesoGramas * valorBase;
+                resultado.innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+            } else {
+                resultado.innerText = 'R$ 0,00';
+            }
+        }
+
+        tipoOuro.addEventListener('change', calcular);
+        peso.addEventListener('input', calcular);
+    </script>
+</body>
+</html>

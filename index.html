@@ -11,7 +11,7 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-TTJQ5WXHDX'); // Seu Measurement ID
+  gtag('config', 'G-TTJQ5WXHDX');
 </script>
 
 <style>
@@ -69,4 +69,91 @@ select, input[type="number"] {
     background-color: #fff8dc;
     color: #4B0000;
     padding: 15px;
-    border-rad
+    border-radius: 12px;
+    border: 2px solid #FFD700;
+}
+</style>
+</head>
+<body>
+<div class="calculadora">
+    <h2>Calculadora de Ouro</h2>
+    <label for="tipoOuro">Tipo de Ouro:</label>
+    <select id="tipoOuro">
+        <option value="">Selecione</option>
+        <option value="24">24K</option>
+        <option value="22">22K</option>
+        <option value="18">18K</option>
+        <option value="14">14K</option>
+        <option value="10">10K</option>
+    </select>
+
+    <label for="peso">Peso (gramas):</label>
+    <input type="number" id="peso" placeholder="Digite o peso" />
+
+    <div class="mensagem-info">
+        Saiba agora o preço e fale no WhatsApp.
+    </div>
+
+    <button class="btn-calcular" onclick="calcular()">
+        Calcular e Enviar WhatsApp
+    </button>
+
+    <div class="resultado" id="resultado">R$ 0,00</div>
+</div>
+
+<script>
+const valoresBase = {
+    "24": 485.71,
+    "22": 427.42,
+    "18": 340.00,
+    "14": 218.57,
+    "10": 72.86
+};
+
+function calcular() {
+    const teor = document.getElementById("tipoOuro").value;
+    const peso = parseFloat(document.getElementById("peso").value);
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (!teor || isNaN(peso)) {
+        alert("Por favor, selecione o teor e insira o peso.");
+        return;
+    }
+
+    // 1️⃣ Calcula e exibe o valor
+    const valorUnitario = valoresBase[teor];
+    const total = (valorUnitario * peso).toFixed(2);
+    resultadoDiv.innerText = "R$ " + total.replace(".", ",");
+
+    // 2️⃣ Prepara mensagem e URL do WhatsApp
+    const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
+    const numeroWhatsApp = "5511989122900";
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+
+    // 3️⃣ Evento GA4 com callback confiável
+    if (typeof gtag === "function") {
+        let popupAberto = false;
+
+        const abrirWhatsApp = () => {
+            if (!popupAberto) {
+                popupAberto = true;
+                window.open(url, "_blank");
+            }
+        };
+
+        gtag('event', 'clique_whatsapp', {
+            'event_category': 'CalculadoraOuro',
+            'event_label': 'Botão Calcular e Enviar WhatsApp',
+            'event_callback': abrirWhatsApp
+        });
+
+        // Fallback de segurança: abre WhatsApp mesmo que callback falhe
+        setTimeout(abrirWhatsApp, 500);
+    } else {
+        // GA não carregou, abre normalmente
+        window.open(url, "_blank");
+    }
+}
+</script>
+</body>
+</html>

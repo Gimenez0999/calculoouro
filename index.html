@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Calculadora de Ouro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
     body {
         margin: 0;
@@ -86,21 +87,12 @@
         border: 2px solid #FFD700;
     }
 </style>
-
-<!-- Google Tag Manager -->
-<script>
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MKF7GVNV');
-</script>
-<!-- End Google Tag Manager -->
 </head>
-
 <body>
+
 <div class="calculadora">
     <h2>Calculadora de Ouro</h2>
+
     <label for="tipoOuro">Tipo de Ouro:</label>
     <select id="tipoOuro">
         <option value="">Selecione</option>
@@ -118,9 +110,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         Saiba agora o preço e fale no WhatsApp.
     </div>
 
-    <button class="btn-calcular" onclick="calcular()">
-        Calcular e Enviar WhatsApp
-    </button>
+    <button class="btn-calcular" onclick="calcularEEnviar()">Calcular e Enviar WhatsApp</button>
 
     <div class="resultado" id="resultado">R$ 0,00</div>
 </div>
@@ -134,7 +124,7 @@ const valoresBase = {
     "10": 72.86
 };
 
-function calcular() {
+function calcularEEnviar() {
     const teor = document.getElementById("tipoOuro").value;
     const peso = parseFloat(document.getElementById("peso").value);
     const resultadoDiv = document.getElementById("resultado");
@@ -148,24 +138,25 @@ function calcular() {
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
 
-    // Dispara evento no GTM
+    // ✅ Envia evento para GTM/Analytics
     if (typeof dataLayer !== "undefined") {
         dataLayer.push({
-            event: 'clique_whatsapp',
+            event: 'clique_calculadora_ouro',
             teor: teor,
             peso: peso,
             valor_estimado: total
         });
     }
 
-    // Aguarda o evento ser processado antes de abrir o WhatsApp
+    // ⏱ Delay para garantir envio do evento antes do redirecionamento
     setTimeout(() => {
         const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
         const numeroWhatsApp = "5511989122900";
         const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
         window.open(url, "_blank");
-    }, 300);
+    }, 500);
 }
 </script>
+
 </body>
 </html>

@@ -1,119 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Calculadora de Ouro</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+<meta charset="UTF-8">
+<title>Calculadora de Ouro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        margin: 0;
+        background-color: #4B0000;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
 
-        body {
-            margin: 0;
-            background-color: #4B0000;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+    .calculadora {
+        border: 4px solid #FFD700;
+        border-radius: 20px;
+        padding: 40px;
+        background-color: #4B0000;
+        color: #FFD700;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        text-align: center;
+    }
 
-        .calculadora {
-            border: 4px solid #FFD700;
-            border-radius: 20px;
-            padding: 40px;
-            background-color: #4B0000;
-            color: #FFD700;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-        }
+    h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
 
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 30px;
-        }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+        text-align: left;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
+    select, input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #FFD700;
+        border-radius: 10px;
+        background-color: #fff8dc;
+        color: #4B0000;
+        font-weight: bold;
+        font-size: 16px;
+    }
 
-        select, input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            background-color: #fff8dc;
-            color: #4B0000;
-            font-weight: bold;
-            font-size: 16px;
-        }
+    .mensagem-info {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #FFD700;
+    }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #FFD700;
-            color: #4B0000;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    .btn-calcular {
+        background-color: #FFD700;
+        color: #4B0000;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
 
-        .resultado {
-            text-align: center;
-            font-size: 22px;
-            background-color: #fff8dc;
-            color: #4B0000;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #FFD700;
-            margin-top: 20px;
-        }
-    </style>
+    .btn-calcular:hover {
+        background-color: #28a745; /* Verde ao passar o mouse */
+        color: #fff;
+    }
+
+    .resultado {
+        margin-top: 20px;
+        font-size: 22px;
+        background-color: #fff8dc;
+        color: #4B0000;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #FFD700;
+    }
+</style>
 </head>
 <body>
-    <div class="calculadora">
-        <h2>Calculadora de Ouro</h2>
-        <label for="tipoOuro">Tipo de Ouro:</label>
-        <select id="tipoOuro">
-            <option value="1">24K</option>
-            <option value="0.80">22K</option>
-            <option value="0.625">18K</option>
-            <option value="0.35">14K</option>
-            <option value="0.13">10K</option>
-        </select>
+<div class="calculadora">
+    <h2>Calculadora de Ouro</h2>
+    <label for="tipoOuro">Tipo de Ouro:</label>
+    <select id="tipoOuro">
+        <option value="">Selecione</option>
+        <option value="24">24K</option>
+        <option value="22">22K</option>
+        <option value="18">18K</option>
+        <option value="14">14K</option>
+        <option value="10">10K</option>
+    </select>
 
-        <label for="peso">Peso (gramas):</label>
-        <input type="number" id="peso" placeholder="Digite o peso em gramas" />
+    <label for="peso">Peso (gramas):</label>
+    <input type="number" id="peso" placeholder="Digite o peso" />
 
-        <button onclick="calcular()">Calcular</button>
-
-        <div class="resultado" id="resultado">R$ 0,00</div>
+    <div class="mensagem-info">
+        Clique para saber o valor e já falar com nosso atendente por WhatsApp.
     </div>
 
-    <script>
-        function calcular() {
-            const tipoOuro = document.getElementById('tipoOuro');
-            const peso = document.getElementById('peso');
-            const resultado = document.getElementById('resultado');
-            const valorBase = 530;
+    <button class="btn-calcular" onclick="calcular()">
+        Calcular e Enviar WhatsApp
+    </button>
 
-            const fator = parseFloat(tipoOuro.value);
-            const pesoGramas = parseFloat(peso.value);
+    <div class="resultado" id="resultado">R$ 0,00</div>
+</div>
 
-            if (!isNaN(pesoGramas)) {
-                const total = fator * pesoGramas * valorBase;
-                resultado.innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
-            } else {
-                resultado.innerText = 'R$ 0,00';
-            }
-        }
-    </script>
+<script>
+const valoresBase = {
+    "24": 485.71,
+    "22": 427.42,
+    "18": 340.00,
+    "14": 218.57,
+    "10": 72.86
+};
+
+function calcular() {
+    const teor = document.getElementById("tipoOuro").value;
+    const peso = parseFloat(document.getElementById("peso").value);
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (!teor || isNaN(peso)) {
+        alert("Por favor, selecione o teor e insira o peso.");
+        return;
+    }
+
+    const valorUnitario = valoresBase[teor];
+    const total = (valorUnitario * peso).toFixed(2);
+    resultadoDiv.innerText = "R$ " + total.replace(".", ",");
+
+    const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
+    const numeroWhatsApp = "5511991114730";
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+
+    window.open(url, "_blank");
+}
+</script>
 </body>
 </html>

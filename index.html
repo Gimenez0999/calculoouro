@@ -4,87 +4,75 @@
 <meta charset="UTF-8">
 <title>Calculadora de Ouro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX'); // Substitua pelo seu Measurement ID
+</script>
+
 <style>
-    body {
-        margin: 0;
-        background-color: #4B0000;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: bold;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .calculadora {
-        border: 4px solid #FFD700;
-        border-radius: 20px;
-        padding: 40px;
-        background-color: #4B0000;
-        color: #FFD700;
-        width: 100%;
-        max-width: 420px;
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-        text-align: center;
-    }
-
-    h2 {
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 16px;
-        text-align: left;
-    }
-
-    select, input[type="number"] {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 20px;
-        border: 2px solid #FFD700;
-        border-radius: 10px;
-        background-color: #fff8dc;
-        color: #4B0000;
-        font-weight: bold;
-        font-size: 16px;
-    }
-
-    .mensagem-info {
-        font-size: 14px;
-        margin-bottom: 10px;
-        color: #FFD700;
-    }
-
-    .btn-calcular {
-        background-color: #FFD700;
-        color: #4B0000;
-        padding: 15px;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
-    }
-
-    .btn-calcular:hover {
-        background-color: #28a745; /* Verde ao passar o mouse */
-        color: #fff;
-    }
-
-    .resultado {
-        margin-top: 20px;
-        font-size: 22px;
-        background-color: #fff8dc;
-        color: #4B0000;
-        padding: 15px;
-        border-radius: 12px;
-        border: 2px solid #FFD700;
-    }
+/* Mantive o mesmo estilo da calculadora que você já tinha */
+body {
+    margin: 0;
+    background-color: #4B0000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.calculadora {
+    border: 4px solid #FFD700;
+    border-radius: 20px;
+    padding: 40px;
+    background-color: #4B0000;
+    color: #FFD700;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    text-align: center;
+}
+h2 { font-size: 28px; margin-bottom: 20px; }
+label { display: block; margin-bottom: 8px; font-size: 16px; text-align: left; }
+select, input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    background-color: #fff8dc;
+    color: #4B0000;
+    font-weight: bold;
+    font-size: 16px;
+}
+.mensagem-info { font-size: 14px; margin-bottom: 10px; color: #FFD700; }
+.btn-calcular {
+    background-color: #FFD700;
+    color: #4B0000;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+.btn-calcular:hover { background-color: #28a745; color: #fff; }
+.resultado {
+    margin-top: 20px;
+    font-size: 22px;
+    background-color: #fff8dc;
+    color: #4B0000;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #FFD700;
+}
 </style>
 </head>
 <body>
@@ -137,18 +125,28 @@ function calcular() {
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
 
-    if (typeof gtag === "function") {
-    gtag('event', 'clique_whatsapp', {
-        'event_category': 'CalculadoraOuro',
-        'event_label': 'Botão Calcular e Enviar WhatsApp'
-    });
-}
-
     const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
     const numeroWhatsApp = "5511989122900";
     const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
 
-    window.open(url, "_blank");
+    // Evento do GA com callback para garantir que seja enviado antes de abrir o WhatsApp
+    if (typeof gtag === "function") {
+        gtag('event', 'clique_whatsapp', {
+            'event_category': 'CalculadoraOuro',
+            'event_label': 'Botão Calcular e Enviar WhatsApp',
+            'event_callback': function() {
+                window.open(url, "_blank");
+            }
+        });
+
+        // Segurança extra: caso o callback não seja chamado em 500ms, abrir mesmo assim
+        setTimeout(() => {
+            window.open(url, "_blank");
+        }, 500);
+    } else {
+        // Se o GA não estiver carregado, abrir WhatsApp normalmente
+        window.open(url, "_blank");
+    }
 }
 </script>
 </body>

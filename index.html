@@ -5,6 +5,16 @@
 <title>Calculadora de Ouro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MKF7GVNV');
+</script>
+<!-- End Google Tag Manager -->
+
 <style>
     body {
         margin: 0;
@@ -29,17 +39,9 @@
         text-align: center;
     }
 
-    h2 {
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
+    h2 { font-size: 28px; margin-bottom: 20px; }
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 16px;
-        text-align: left;
-    }
+    label { display: block; margin-bottom: 8px; font-size: 16px; text-align: left; }
 
     select, input[type="number"] {
         width: 100%;
@@ -53,11 +55,7 @@
         font-size: 16px;
     }
 
-    .mensagem-info {
-        font-size: 14px;
-        margin-bottom: 10px;
-        color: #FFD700;
-    }
+    .mensagem-info { font-size: 14px; margin-bottom: 10px; color: #FFD700; }
 
     .btn-calcular {
         background-color: #FFD700;
@@ -90,9 +88,13 @@
 </head>
 <body>
 
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MKF7GVNV"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End GTM (noscript) -->
+
 <div class="calculadora">
     <h2>Calculadora de Ouro</h2>
-
     <label for="tipoOuro">Tipo de Ouro:</label>
     <select id="tipoOuro">
         <option value="">Selecione</option>
@@ -106,11 +108,9 @@
     <label for="peso">Peso (gramas):</label>
     <input type="number" id="peso" placeholder="Digite o peso" />
 
-    <div class="mensagem-info">
-        Saiba agora o preço e fale no WhatsApp.
-    </div>
+    <div class="mensagem-info">Saiba agora o preço e fale no WhatsApp.</div>
 
-    <button class="btn-calcular" onclick="calcularEEnviar()">Calcular e Enviar WhatsApp</button>
+    <button class="btn-calcular" onclick="calcular()">Calcular e Enviar WhatsApp</button>
 
     <div class="resultado" id="resultado">R$ 0,00</div>
 </div>
@@ -124,7 +124,7 @@ const valoresBase = {
     "10": 72.86
 };
 
-function calcularEEnviar() {
+function calcular() {
     const teor = document.getElementById("tipoOuro").value;
     const peso = parseFloat(document.getElementById("peso").value);
     const resultadoDiv = document.getElementById("resultado");
@@ -138,23 +138,22 @@ function calcularEEnviar() {
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
 
-    // ✅ Envia evento para GTM/Analytics
+    // Dispara evento no GTM antes de abrir WhatsApp
     if (typeof dataLayer !== "undefined") {
         dataLayer.push({
-            event: 'clique_calculadora_ouro',
-            teor: teor,
-            peso: peso,
-            valor_estimado: total
+            'event': 'clique_whatsapp',
+            'event_category': 'CalculadoraOuro',
+            'event_label': 'Botão Calcular e Enviar WhatsApp'
         });
     }
 
-    // ⏱ Delay para garantir envio do evento antes do redirecionamento
+    // Delay para garantir que o evento seja enviado
     setTimeout(() => {
         const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
         const numeroWhatsApp = "5511989122900";
         const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
         window.open(url, "_blank");
-    }, 500);
+    }, 200); // 200ms é suficiente
 }
 </script>
 

@@ -5,47 +5,86 @@
 <title>Calculadora de Ouro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-    margin: 0;
-    background-color: #4B0000;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.calculadora {
-    border: 4px solid #FFD700;
-    border-radius: 20px;
-    padding: 40px;
-    background-color: #4B0000;
-    color: #FFD700;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-    text-align: center;
-}
-h2 { font-size: 28px; margin-bottom: 20px; }
-label { display: block; margin-bottom: 8px; font-size: 16px; text-align: left; }
-select, input[type="number"] {
-    width: 100%; padding: 12px; margin-bottom: 20px;
-    border: 2px solid #FFD700; border-radius: 10px;
-    background-color: #fff8dc; color: #4B0000;
-    font-weight: bold; font-size: 16px;
-}
-.mensagem-info { font-size: 14px; margin-bottom: 10px; color: #FFD700; }
-.btn-calcular {
-    background-color: #FFD700; color: #4B0000;
-    padding: 15px; border: none; border-radius: 12px;
-    font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease;
-    width: 100%;
-}
-.btn-calcular:hover { background-color: #28a745; color: #fff; }
-.resultado {
-    margin-top: 20px; font-size: 22px; background-color: #fff8dc;
-    color: #4B0000; padding: 15px; border-radius: 12px; border: 2px solid #FFD700;
-}
+    body {
+        margin: 0;
+        background-color: #4B0000;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .calculadora {
+        border: 4px solid #FFD700;
+        border-radius: 20px;
+        padding: 40px;
+        background-color: #4B0000;
+        color: #FFD700;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    select, input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #FFD700;
+        border-radius: 10px;
+        background-color: #fff8dc;
+        color: #4B0000;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .mensagem-info {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #FFD700;
+    }
+
+    .btn-calcular {
+        background-color: #FFD700;
+        color: #4B0000;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-calcular:hover {
+        background-color: #28a745; /* Verde ao passar o mouse */
+        color: #fff;
+    }
+
+    .resultado {
+        margin-top: 20px;
+        font-size: 22px;
+        background-color: #fff8dc;
+        color: #4B0000;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #FFD700;
+    }
 </style>
 </head>
 <body>
@@ -64,8 +103,14 @@ select, input[type="number"] {
     <label for="peso">Peso (gramas):</label>
     <input type="number" id="peso" placeholder="Digite o peso" />
 
-    <div class="mensagem-info">Saiba agora o preço e fale no WhatsApp.</div>
-    <button class="btn-calcular" onclick="calcular()">Calcular e Enviar WhatsApp</button>
+    <div class="mensagem-info">
+        Clique para saber o valor e já falar com nosso atendente por WhatsApp.
+    </div>
+
+    <button class="btn-calcular" onclick="calcular()">
+        Calcular e Enviar WhatsApp
+    </button>
+
     <div class="resultado" id="resultado">R$ 0,00</div>
 </div>
 
@@ -92,22 +137,11 @@ function calcular() {
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
 
-    // Envia mensagem para o Wix via postMessage (GTM)
-    if (window.parent) {
-        window.parent.postMessage({
-            event: 'clique_whatsapp',
-            categoria: 'CalculadoraOuro',
-            label: 'Botão Calcular e Enviar WhatsApp'
-        }, '*');
-    }
+    const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
+    const numeroWhatsApp = "5511991114730";
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
 
-    // Delay de 200ms para garantir envio
-    setTimeout(() => {
-        const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
-        const numeroWhatsApp = "5511989122900";
-        const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-        window.open(url, "_blank");
-    }, 200);
+    window.open(url, "_blank");
 }
 </script>
 </body>

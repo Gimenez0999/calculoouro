@@ -16,6 +16,7 @@ body {
     height: 100vh;
 }
 .calculadora {
+    position: relative; /* para posicionar o balão internamente */
     border: 4px solid #FFD700;
     border-radius: 20px;
     padding: 40px;
@@ -33,6 +34,12 @@ select, input[type="number"] {
     border: 2px solid #FFD700; border-radius: 10px;
     background-color: #fff8dc; color: #4B0000;
     font-weight: bold; font-size: 16px;
+    outline: none;
+    transition: box-shadow .2s ease, border-color .2s ease;
+}
+select.erro, input.erro {
+    border-color: #ff4d4d;
+    box-shadow: 0 0 0 3px rgba(255, 77, 77, .25);
 }
 .mensagem-info { font-size: 14px; margin-bottom: 10px; color: #FFD700; }
 .btn-calcular {
@@ -46,11 +53,63 @@ select, input[type="number"] {
     margin-top: 20px; font-size: 22px; background-color: #fff8dc;
     color: #4B0000; padding: 15px; border-radius: 12px; border: 2px solid #FFD700;
 }
+
+/* ---- Balão de aviso (toast) ---- */
+.balao {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -12px; /* aparece “por cima” do conteúdo */
+    background: #fff8dc;
+    color: #4B0000;
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+    z-index: 5;
+}
+.balao:after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: #FFD700 transparent transparent transparent; /* borda externa (dourada) */
+}
+.balao:before {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #fff8dc transparent transparent transparent; /* triângulo interno (cor de fundo) */
+    z-index: 1;
+}
+.balao.mostrar {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+/* espaço para o balão não cobrir o título */
+.calculadora { padding-top: 56px; }
 </style>
 </head>
 <body>
 <div class="calculadora">
+    <!-- Balão de mensagem -->
+    <div id="balao" class="balao" role="alert" aria-live="polite" aria-atomic="true" style="display:none;"></div>
+
     <h2>Calculadora de Ouro</h2>
+
     <label for="tipoOuro">Tipo de Ouro:</label>
     <select id="tipoOuro">
         <option value="">Selecione</option>
@@ -62,10 +121,10 @@ select, input[type="number"] {
     </select>
 
     <label for="peso">Peso (gramas):</label>
-    <input type="number" id="peso" placeholder="Digite o peso" />
+    <input type="number" id="peso" placeholder="Digite o peso" inputmode="decimal" />
 
     <div class="mensagem-info">Saiba agora o preço e fale no WhatsApp.</div>
-    <button class="btn-calcular" onclick="calcular()">Calcular e Enviar WhatsApp</button>
+    <button class="btn-calcular" id="btnCalcular">Calcular e Enviar WhatsApp</button>
     <div class="resultado" id="resultado">R$ 0,00</div>
 </div>
 
@@ -78,21 +137,74 @@ const valoresBase = {
     "10": 72.86
 };
 
-function calcular() {
-    const teor = document.getElementById("tipoOuro").value;
-    const peso = parseFloat(document.getElementById("peso").value);
-    const resultadoDiv = document.getElementById("resultado");
+const teorEl = document.getElementById("tipoOuro");
+const pesoEl = document.getElementById("peso");
+const resultadoDiv = document.getElementById("resultado");
+const balao = document.getElementById("balao");
+const btn = document.getElementById("btnCalcular");
 
-  if (!teor || isNaN(peso)) {
-    alert("Por favor, selecione o teor e insira o peso.");
-    return;
+let balaoTimeout;
+
+/** Mostra balão de aviso no topo da calculadora */
+function showBalao(msg, ms = 3500) {
+    balao.textContent = msg;
+    balao.style.display = 'block';
+    requestAnimationFrame(() => balao.classList.add('mostrar'));
+    clearTimeout(balaoTimeout);
+    balaoTimeout = setTimeout(hideBalao, ms);
 }
-    
+function hideBalao() {
+    balao.classList.remove('mostrar');
+    // espera a transição terminar antes de esconder
+    setTimeout(() => { balao.style.display = 'none'; }, 250);
+}
+
+/** Limpa destaque de erro quando o usuário preenche */
+[teorEl, pesoEl].forEach(el => {
+    el.addEventListener('input', () => el.classList.remove('erro'));
+});
+
+/** Validação simples sem alert e sem validação nativa do navegador */
+function validarCampos() {
+    let ok = true;
+    // limpar estados anteriores
+    teorEl.classList.remove('erro');
+    pesoEl.classList.remove('erro');
+
+    const teor = teorEl.value;
+    const peso = parseFloat(pesoEl.value.replace(',', '.'));
+
+    if (!teor && (isNaN(peso) || peso <= 0)) {
+        showBalao('Por favor, selecione o teor e informe o peso.');
+        teorEl.classList.add('erro');
+        pesoEl.classList.add('erro');
+        if (!teor) teorEl.focus();
+        ok = false;
+    } else if (!teor) {
+        showBalao('Selecione o teor (ex.: 18K, 22K).');
+        teorEl.classList.add('erro');
+        teorEl.focus();
+        ok = false;
+    } else if (isNaN(peso) || peso <= 0) {
+        showBalao('Informe o peso em gramas (maior que zero).');
+        pesoEl.classList.add('erro');
+        pesoEl.focus();
+        ok = false;
+    }
+    return ok;
+}
+
+function calcular() {
+    if (!validarCampos()) return;
+
+    const teor = teorEl.value;
+    const peso = parseFloat(pesoEl.value.replace(',', '.'));
+
     const valorUnitario = valoresBase[teor];
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
 
-    // Envia mensagem para o Wix via postMessage (GTM)
+    // Envia mensagem para o site (ex: Wix / GTM)
     if (window.parent) {
         window.parent.postMessage({
             event: 'clique_whatsapp',
@@ -101,14 +213,14 @@ function calcular() {
         }, '*');
     }
 
-    // Delay de 200ms para garantir envio
-    setTimeout(() => {
-        const mensagem = `Olá! Tenho ${peso}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
-        const numeroWhatsApp = "5511989122900";
-        const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-        window.open(url, "_blank");
-    }, 200);
+    // Abre WhatsApp
+    const mensagem = `Olá! Tenho ${peso.toString().replace('.', ',')}g de ouro ${teor}K. Quanto receberei?\nValor estimado: R$ ${total.replace(".", ",")}`;
+    const numeroWhatsApp = "5511989122900";
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
 }
+
+btn.addEventListener('click', calcular);
 </script>
 </body>
 </html>

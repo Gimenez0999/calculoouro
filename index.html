@@ -87,6 +87,7 @@ function calcular() {
     alert("Por favor, selecione o teor e insira o peso.");
     return;
 }
+    
     const valorUnitario = valoresBase[teor];
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");

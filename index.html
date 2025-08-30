@@ -83,25 +83,10 @@ function calcular() {
     const peso = parseFloat(document.getElementById("peso").value);
     const resultadoDiv = document.getElementById("resultado");
 
-   const msgErro = document.getElementById("msgErro");
-
-// validação com mensagens inline (sem alert do navegador)
-if (!teor && (isNaN(peso) || peso <= 0)) {
-    msgErro.innerText = "Selecione o teor e informe um peso válido.";
+  if (!teor || isNaN(peso)) {
+    alert("Por favor, selecione o teor e insira o peso.");
     return;
 }
-if (!teor) {
-    msgErro.innerText = "Selecione o teor do ouro.";
-    return;
-}
-if (isNaN(peso) || peso <= 0) {
-    msgErro.innerText = "Informe um peso válido (em gramas).";
-    return;
-}
-// limpa a mensagem se estiver tudo ok
-msgErro.innerText = "";
-
-
     const valorUnitario = valoresBase[teor];
     const total = (valorUnitario * peso).toFixed(2);
     resultadoDiv.innerText = "R$ " + total.replace(".", ",");
